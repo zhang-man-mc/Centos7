@@ -20,14 +20,14 @@
 
 4. 解压安装包 ：
 
-> tar xzf jdk安装包
+> tar xzf jdk-22_linux-x64_bin.tar.gz 
 
 
 
 5. 执行命令：  vim  /etc/profile  写环境变量
 
 ~~~
-export JAVA_HOME=/home/ni/soft/jdk-22.0.2
+export JAVA_HOME=/usr/local/jdk-22.0.2
 
 export PATH=$JAVA_HOME/bin:$PATH
 
@@ -70,15 +70,15 @@ yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel r
 
 ```
 cd /usr/local 
-wget https://www.python.org/ftp/python/3.9.7/Python-3.9.7.tgz
+wget https://www.python.org/ftp/python/3.12.4/Python-3.12.4.tgz
 ```
 
 5.解压。切换到解压后的目录。编译。安装
 
 ~~~
-tar -zxvf Python-3.9.7.tgz
+tar -zxvf Python-3.12.4.tgz
 
-cd Python-3.9.7
+cd Python-3.12.4
 ./configure --prefix=/usr/local/python3
 make && make install
 
@@ -149,21 +149,30 @@ wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.46.0.tar.gz
 3.解压。切换到解压后的目录。编译。安装
 
 ~~~
-tar -zxvf git-2.9.0.tar.gz
-cd git-2.9.0
-./configure --prefix=/usr/local
+tar -zxvf git-2.46.0.tar.gz
+cd git-2.46.0
+./configure --prefix=/usr/local/git
 make && make install
 ~~~
 
+4.配置环境变量
 
+~~~
+ vim /etc/profile
+ 
+ export PATH=/usr/local/git/bin:$PATH
 
-4.查看git版本
+~~~
+
+5.查看git版本
 
 ```
  git --version
 ```
 
 参考： https://blog.csdn.net/xwj1992930/article/details/96428998
+
+https://blog.csdn.net/sxau_zhangtao/article/details/129789497
 
 
 
@@ -309,8 +318,8 @@ rm -rf /usr/bin/npm
 
 ~~~~
 # 下载解压nodejs
-wget https://nodejs.org/dist/v6.17.1/node-v6.17.1-linux-x64.tar.gz
-tar -zxvf node-v6.17.1-linux-x64.tar.gz
+wget https://nodejs.org/dist/v20.16.0/node-v20.16.0-linux-x64.tar.gz  
+tar -zxvf node-v20.16.0-linux-x64.tar.gz
 
 ~~~~
 
@@ -318,9 +327,9 @@ tar -zxvf node-v6.17.1-linux-x64.tar.gz
 
 ~~~
 # 建立软链接
-ln -s /opt/modules/node-v6.17.1-linux-x64/bin/node /usr/bin/node
+ln -s /usr/local/node-v20.16.0-linux-x64/bin/node /usr/bin/node
 
-ln /opt/modules/node-v6.17.1-linux-x64/bin/npm /usr/bin/npm
+ln -s /usr/local/node-v20.16.0-linux-x64/bin/npm /usr/bin/npm
 
 
 ~~~
@@ -659,5 +668,81 @@ $ service iptables save #保存iptables规则
 
 
 
+## Centos 7防火墙相关命令
 
+~~~
+# 开启防火墙
+systemctl start firewalld
+
+# 关闭防火墙
+systemctl stop firewalld
+
+# 重启防火墙
+systemctl restart firewalld
+
+# 查看防火墙状态
+systemctl status firewalld
+
+# 开启端口
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+
+# 关闭端口
+firewall-cmd --zone=public --remove-port=80/tcp --permanent
+
+# 查看开放的端口
+firewall-cmd --list-ports
+
+~~~
+
+
+
+## nginx命令
+
+~~~
+# 启动 Nginx 服务器：
+nginx：直接运行此命令即可启动 Nginx 服务器。
+
+# 停止 Nginx 服务器：
+nginx -s stop：快速停止 Nginx，不等待当前请求处理完毕。
+
+nginx -s quit：优雅地停止 Nginx，等待当前所有请求处理完毕后再停止。
+
+# 重新加载配置文件：
+nginx -s reload：重新加载 Nginx 配置文件，不停止 Nginx 服务，这种方式可以避免服务中断。
+
+# 查看 Nginx 版本：
+nginx -v 或 nginx -V：显示 Nginx 的版本信息。
+~~~
+
+
+
+## 查看占用了特定端口的进程
+
+~~~
+ss -tnlp | grep 8081
+~~~
+
+
+
+## web前后端放到虚拟机中
+
+12.1 前端访问后端的ip应该为虚拟机的ip地址，我把虚拟机ip设置为静态ip,每次都是固定的
+
+12.2 虚拟机防火墙应该开放前端访问后端的端口
+
+
+
+
+
+
+
+
+
+问题：
+
+1.移动端无法访问虚拟机web前端
+
+2.移动端可以访问虚拟机web前端，但后端接受不到参数
+
+3.访问主机ip映射不到web了。
 
