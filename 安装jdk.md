@@ -598,7 +598,7 @@ default-storage-engine=innodb
 
 
 
-修改登录密码
+8.修改登录密码
 
 ~~~
 1.先进入mysql
@@ -635,7 +635,7 @@ mysql> alter user 'root'@'localhost' identified by '1234';
 
 
 
-更新MySQL的远程访问：
+9.更新MySQL的远程访问：
 
 ~~~
 # 登录
@@ -651,7 +651,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '1234' WITH GRANT OPTION
 
 
 
-打开centos主机的 iptables 3306端口
+10.打开centos主机的 iptables 3306端口
 
 ~~~~
 
@@ -663,6 +663,37 @@ $ service iptables save #保存iptables规则
 利用navicat即可连接了!
 
 参考：https://www.cnblogs.com/xiadongqing/p/16062385.html
+
+
+
+11.批量导入sql文件
+
+把所有sql文件放在新建的data_sql文件夹下。在data_sql平级目录下创建 sql.sh 文件
+
+~~~
+# sql.sh
+
+#!/bin/bash
+dir=`ls /usr/local/data_sql/` #定义遍历的目录，这个是你sql的存放路径
+echo "" > all.sql  #创建一个总的sql文件，注意别跟你现有的重名即可！
+for i in $dir
+do
+    echo "source /usr/local/data_sql/$i;" >> all.sql
+done 
+~~~
+
+执行sql.sh，得到all.sql文件
+
+然后我们登录到mysql中，用source导入sql即可
+
+```
+mysql > source /usr/local/all.sql;
+
+```
+
+参考： https://www.cnblogs.com/lyc94620/p/11825371.html
+
+
 
 
 
@@ -745,4 +776,48 @@ ss -tnlp | grep 8081
 2.移动端可以访问虚拟机web前端，但后端接受不到参数
 
 3.访问主机ip映射不到web了。
+
+
+
+## 解决移动端可以访问虚拟机web前端，但后端接受不到参数的问题
+
+1.利用VM中的 桥接模式
+
+①虚拟机操作系统直接连接物理网卡，通过物理网卡与外部网络建立连接关系。
+②此模式下，虚拟机与宿主机处于同一网段中，以独立IP的身份参与网络交互。与宿主机处于同一网段中的其他PC可以直接访问虚拟机（可以ping通虚拟机的IP，访问虚拟机上部署的应用）。
+
+说白了桥接模式就是相当于一台独立的机器，可以直接接受外部请求
+
+而NAT把宿主机当做一台网关，把对宿主机ip的访问转为 对虚拟机的访问。
+
+
+
+2.查看宿主机的网关，子网掩码，及ip
+
+![72275387745](C:\Users\19125\Desktop\2024-2月面试\job准备\Linux\安装jdk.assets\1722753877455.png)
+
+3.修改虚拟机网络配置
+
+~~~
+vi /etc/sysconfig/network-scripts/ifcfg-ens33
+
+
+
+IPADDR=192.168.1.138
+NETMASK=255.255.255.0
+GATAWAY=192.168.1.1
+
+DNS1=114.114.114.114
+DNS2=8.8.8.8
+
+# 重启网络
+service network restart
+
+~~~
+
+4. 可以在手机上 访问  192.168.1.138:80  ，并且后端可以收到请求！
+
+
+参考：https://blog.csdn.net/hualinger/article/details/131188141
+
 
